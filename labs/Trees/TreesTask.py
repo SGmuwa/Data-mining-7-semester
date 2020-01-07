@@ -1,10 +1,78 @@
 # Импортируем дерево решений для классификации
 import numpy as np
-import sklearn as sl
+import sklearn
+from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
-df = pd.read_csv('train.csv', sep=',')
-print(df)
 
+# 1. Загрузите выборку из файла titanic.csv с помощью пакета Pandas.
+def Task1():
+    df = pd.read_csv('train.csv', sep=',')
+    return df
+
+# 2. Оставьте в выборке четыре признака: класс пассажира (Pclass), цену билета (Fare), возраст пассажира (Age) и его пол (Sex).
+def Task2():
+    df = Task1()
+    d_sample = pd.DataFrame(df, columns  = ['Pclass', 'Fare', 'Age', 'Sex'])
+    return (df, d_sample)
+
+# 5. В данных есть пропущенные значения — например, для некоторых
+# пассажиров неизвестен их возраст. Такие записи при чтении их в
+# pandas принимают значение nan. Найдите все объекты, у которых
+# есть пропущенные признаки, и удалите их из выборки.
+def Task5():
+    (df, d_sample) = Task2()
+    d_sample = d_sample.dropna()
+    return (df, d_sample)
+
+# 3. Обратите внимание, что признак Sex имеет строковые значения.
+def Task3():
+    (df, d_sample) = Task5()
+    d_sample['Sex'].replace(['male', 'female'], [1, 0], inplace=True)
+    return (df, d_sample)
+
+# 4. Выделите целевую переменную — она записана в столбце Survived.
+def Task4():
+    (df, d_sample) = Task3()
+    d_y = pd.DataFrame(df,columns = ['Survived','Age'])
+    d_y = d_y.dropna()
+    del d_y['Age']
+    return (d_sample, d_y)
+
+#d_sample = np.array(d_sample)
+#d_y = np.array(d_y)
+
+# 6. Обучите решающее дерево с параметром random_state=241 и остальными параметрами по умолчанию.
+def Task6():
+    clf = DecisionTreeClassifier(random_state = 241)
+    (d_sample, d_y) = Task4()
+    d_sample = np.array(d_sample)
+    d_y = np.array(d_y)
+    # Обучаем, Создаёт классификатор дерева решений из обучающего набора (X, Y).
+    print(d_sample)
+    clf.fit(d_sample, d_y)
+    return clf
+
+# 7. Вычислите важности признаков и найдите два признака с наибольшей важностью.
+# Их названия будут ответами для данной задачи
+# (в качестве ответа укажите названия признаков через запятую без пробелов).
+def Task7():
+    clf = Task6()
+    importances = pd.Series(clf.feature_importances_, index=['Pclass', 'Fare', 'Age', 'Sex'])
+    print(importances)
+    print(' '.join(importances.sort_values(ascending=False).head(2).index)) #сортировка Серии в порядке по убыванию, возвращает первые два максимальных значения
+
+
+    X = [[1,2], [3, 4], [5, 6]] # обучающие выборки (3 элемента в обучающей выборке (3 строки) с двумя признаками)
+    Y = [0, 1,0] # содержит метки классов для обучающей выбороки
+    clf = sklearn.tree.DecisionTreeClassifier()
+    clf = clf.fit(X, Y)
+    clf.predict([[2., 2.]])
+    print(sklearn.tree.export_text(clf.fit(X,Y)))
+
+
+    print(np.array([0, 1,0]))
+
+Task7()
 
 # Загрузите выборку из файла train.csv с помощью Pandas
 # Оставьте в выборке 4 признака: класс пассажира (Pclass), цену билета (Fare), возраст пассажира (Age) и его пол (Sex)
@@ -14,30 +82,23 @@ print(df)
 # Найдите все объекты, у которых есть пропущенные признаци, и удалите их из выборки
 
 
-d_sample = pd.DataFrame(df,columns  = ['Pclass','Fare','Age','Sex'])
-
 # выбор строк, отвечающих условию.
 # d_sample_result = d_sample[d_sample['Age'].notna() & d_sample['Pclass'].notna() & d_sample['Fare'].notna() & d_sample['Sex'].notna()]
 
 
-d_sample = d_sample.dropna()
-d_sample['Sex'].replace(['male', 'female'], [1, 0], inplace=True)
-
-print(d_sample)
 
 
-#Выделите целевую переменную - она записана в столбце Survived
-d_y = pd.DataFrame(df,columns = ['Survived','Age'])
-d_y = d_y.dropna()
-del d_y['Age']
-print(d_y)
+# print(d_sample)
 
 
-#как преобразовать в массив numpy для деревьев
-d_sample = np.array(d_sample)
-d_y = np.array(d_y)
-print(d_sample)
-print(d_y)
+# Выделите целевую переменную - она записана в столбце Survived
+# print(d_y)
+
+
+# как преобразовать в массив numpy для деревьев
+
+# print(d_sample)
+# print(d_y)
 
 
 # Обучите решающее дерево с параметром random_state = 241 и 
@@ -49,32 +110,13 @@ print(d_y)
 # Если int, random_state – это семя, используемое генератором случайных чисел; Если экземпляр RandomState, random_state – генератор случайных чисел; Если None, генератор случайных чисел является экземпляром RandomState, используемым np.random.
 # Таким образом, случайный алгоритм будет использоваться в любом случае. Передача любого значения (будь то конкретный int, например, 0 или экземпляр RandomState ) не изменит этого. Единственное обоснование для передачи значения int (0 или иначе) заключается в том, чтобы сделать результат согласованным между вызовами: если вы вызываете это с помощью random_state=0 (или любого другого значения), то каждый раз вы получите то же самое результат.
 
-from sklearn.tree import tree
 # Создаем модель дерева
-clf = tree.DecisionTreeClassifier(random_state = 241)
 
-# Обучаем, Создаёт классификатор дерева решений из обучающего набора (X, Y).
-clf.fit(d_sample,d_y)
 
 
 # Вычислите важности признаков и найдите два признака с наибольшей важностью. 
 # Их названия будут ответами для данной задачи (в качестве ответа укажите названия признаков через запятую без пробелов)
 
-x_labels = ['Pclass', 'Fare', 'Age', 'Sex']
-importances = pd.Series(clf.feature_importances_, index=x_labels)
-print(importances)
-print(' '.join(importances.sort_values(ascending=False).head(2).index)) #сортировка Серии в порядке по убыванию, возвращает первые два максимальных значения
 
 
-X = [[1,2], [3, 4], [5, 6]] # обучающие выборки (3 элемента в обучающей выборке (3 строки) с двумя признаками)
-Y = [0, 1,0]#содержит метки классов для обучающей выбороки
-clf = sl.tree.DecisionTreeClassifier()
-clf = clf.fit(X, Y)
-clf.predict([[2., 2.]])
-print(sl.tree.export_text(clf.fit(X,Y)))
 
-
-0.140005+0.303436+0.256046+0.300512
-
-
-print(np.array([0, 1,0]))
