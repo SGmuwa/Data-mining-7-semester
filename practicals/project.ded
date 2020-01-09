@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <Document>
 	<Version>
 		<Comments>Аналитическая платформа Deductor</Comments>
@@ -42,7 +42,7 @@
 					<ID>1</ID>
 					<VendorName>TBGTextFileVendor</VendorName>
 					<Name>MyBuys</Name>
-					<DisplayName>Текстовый файл (Z:\home\sgmuwa\Documents\git\Data-mining-7-semester\practicals\data.txt)</DisplayName>
+					<DisplayName>Текстовый файл (data.txt)</DisplayName>
 					<NodeIndex>2</NodeIndex>
 					<Component>
 						<Version>1</Version>
@@ -51,7 +51,7 @@
 						<StopTime>2020.01.08 15:07:52</StopTime>
 						<ElapsedTimeFmt>00:00:00.079</ElapsedTimeFmt>
 						<StoppedByUser>1</StoppedByUser>
-						<FileName>Z:\home\sgmuwa\Documents\git\Data-mining-7-semester\practicals\data.txt</FileName>
+						<FileName>data.txt</FileName>
 						<CharSet>chrANSI</CharSet>
 						<FixedFormat>0</FixedFormat>
 						<DecimalPoint>,</DecimalPoint>
