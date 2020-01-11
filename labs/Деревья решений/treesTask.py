@@ -19,7 +19,7 @@ print(
 
 # 1. Загрузите выборку из файла titanic.csv с помощью пакета Pandas.
 def Task1():
-    return pd.read_csv('train.csv', sep=',')
+    return pd.read_csv('titanic.csv', sep=',')
 
 # 2. Оставьте в выборке четыре признака: класс пассажира (Pclass), цену билета (Fare), возраст пассажира (Age) и его пол (Sex).
 def Task2():
