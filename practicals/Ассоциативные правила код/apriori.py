@@ -5,7 +5,7 @@ import pandas
 import itertools
 
 items = pandas.read_csv('transactions.txt', sep='\t')
-for a in items['description'].unique(): print(a)
+print(items['description'].unique())
 groupValues = items.groupby(by='description').groups
 
 def differenceDictionary(big, small):
@@ -14,6 +14,26 @@ def differenceDictionary(big, small):
         if x in output.keys():
             del output[x]
     return output
+
+def intersectionLists(list):
+    intersection = None
+    for v in list:
+        if intersection == None:
+            intersection = set(v)
+            continue
+        intersection &= set(v)
+    return intersection
+
+def dropImpossibleKeys(combinationsKeys):
+    toRemove = []
+    for i in range(len(combinationsKeys)):
+        x = combinationsKeys[i]
+        intersection = intersectionLists(x.values())
+        if len(intersection) == 0:
+            toRemove.append(i)
+    toRemove.reverse()
+    for i in toRemove:
+        del combinationsKeys[i]
 
 # Возвращает все комбинации условия и следствия.
 def FindAllCombinations(hand, min = 1, max = None):
@@ -29,7 +49,7 @@ def FindAllCombinations(hand, min = 1, max = None):
             for z in buffer[y]:
                 toAdd[y][z] = tuple(hand[z])
         combinationsKeys.extend(toAdd)
-    print(combinationsKeys[0])
+    dropImpossibleKeys(combinationsKeys)
     for x in combinationsKeys:
         withoutCondition = differenceDictionary(hand, x)
         effectCombinations = []
@@ -40,10 +60,19 @@ def FindAllCombinations(hand, min = 1, max = None):
             toAdd.append({})
             for z in effectCombinations[y]:
                 toAdd[y][z] = tuple(hand[z])
-        Res[frozenset(x.items())] = toAdd
+        Res[tuple(x.items())] = toAdd
     return Res
 
+rules = {}
 for condition, effect in FindAllCombinations(groupValues, 1, len(groupValues) - 1).items():
-    print(condition, effect)
-    input()
-    
+    toIntersection = []
+    for v in condition:
+        toIntersection.append(v[1])
+    extendLen = 0
+    for v in effect:
+        toIntersection.extend(v.values())
+        extendLen += len(v.values())
+    intersection = intersectionLists(toIntersection)
+    rules[(tuple(c[0] for c in condition), tuple(tuple(e.keys()) for e in effect))] = len(intersection) / extendLen
+
+print(sorted(rules.items(), key=lambda kv: kv[1]))
