@@ -6,6 +6,12 @@ import itertools
 
 items = pandas.read_csv('transactions.txt', sep='\t')
 print(items['description'].unique())
+groupIds = items.groupby(by='id').groups
+for k, v in groupIds.items():
+    toAdd = []
+    for x in v:
+        toAdd.append(items['description'][x])
+    groupIds[k] = toAdd
 groupValues = items.groupby(by='description').groups
 for k, v in groupValues.items():
     toAdd = []
@@ -75,6 +81,6 @@ for condition, effect in FindAllCombinations(groupValues, 1, len(groupValues) - 
     for v in effect.values():
         toIntersection.append(v)
     intersection = intersectionLists(toIntersection)
-    rules[(tuple(condition.items()), tuple(effect.items()))] = len(intersection) / needLen
-for a in sorted(rules.items(), key=lambda kv: kv[1]):
+    rules[(tuple(condition.keys()), tuple(effect.keys()))] = {'Support': len(intersection) / len(groupIds), 'Confidence': len(intersection) / needLen}
+for a in sorted(rules.items(), key=lambda kv: kv[1]['Confidence']):
     print(a)
