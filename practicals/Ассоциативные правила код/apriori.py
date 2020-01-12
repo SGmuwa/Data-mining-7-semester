@@ -7,6 +7,11 @@ import itertools
 items = pandas.read_csv('transactions.txt', sep='\t')
 print(items['description'].unique())
 groupValues = items.groupby(by='description').groups
+for k, v in groupValues.items():
+    toAdd = []
+    for x in v:
+        toAdd.append(items['id'][x])
+    groupValues[k] = toAdd
 
 def differenceDictionary(big, small):
     output = big.copy()
@@ -39,7 +44,7 @@ def dropImpossibleKeys(combinationsKeys):
 def FindAllCombinations(hand, min = 1, max = None):
     if max == None: max = len(hand)
     max = max + 1
-    Res = {}
+    Res = []
     combinationsKeys = []
     for x in range(min, max):
         buffer = list(itertools.combinations(hand, x))
@@ -55,24 +60,21 @@ def FindAllCombinations(hand, min = 1, max = None):
         effectCombinations = []
         for y in range(1, max - len(x)):
             effectCombinations.extend(itertools.combinations(withoutCondition, y))
-        toAdd = []
         for y in range(len(effectCombinations)):
-            toAdd.append({})
             for z in effectCombinations[y]:
-                toAdd[y][z] = tuple(hand[z])
-        Res[tuple(x.items())] = toAdd
+                Res.append((x, {z: tuple(hand[z])}))
     return Res
 
 rules = {}
-for condition, effect in FindAllCombinations(groupValues, 1, len(groupValues) - 1).items():
+for condition, effect in FindAllCombinations(groupValues, 1, len(groupValues) - 1):
     toIntersection = []
-    for v in condition:
-        toIntersection.append(v[1])
-    extendLen = 0
-    for v in effect:
-        toIntersection.extend(v.values())
-        extendLen += len(v.values())
+    needLen = 0
+    for v in condition.values():
+        toIntersection.append(v)
+        needLen += len(v)
+    for v in effect.values():
+        toIntersection.append(v)
     intersection = intersectionLists(toIntersection)
-    rules[(tuple(c[0] for c in condition), tuple(tuple(e.keys()) for e in effect))] = len(intersection) / extendLen
-
-print(sorted(rules.items(), key=lambda kv: kv[1]))
+    rules[(tuple(condition.items()), tuple(effect.items()))] = len(intersection) / needLen
+for a in sorted(rules.items(), key=lambda kv: kv[1]):
+    print(a)
