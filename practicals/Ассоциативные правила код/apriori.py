@@ -4,7 +4,7 @@
 import pandas
 import itertools
 
-items = pandas.read_csv('transactions.txt', sep='\t')
+items = pandas.read_csv(input('filename *.csv: '), sep='\t')
 print(items['description'].unique())
 groupIds = items.groupby(by='id').groups
 for k, v in groupIds.items():
@@ -29,6 +29,7 @@ def differenceDictionary(big, small):
 def intersectionLists(list):
     intersection = None
     for v in list:
+        #print('DEBUG', 5)
         if intersection == None:
             intersection = set(v)
             continue
@@ -60,8 +61,11 @@ def FindAllCombinations(hand, min = 1, max = None):
             for z in buffer[y]:
                 toAdd[y][z] = tuple(hand[z])
         combinationsKeys.extend(toAdd)
+    print('combinations:', len(combinationsKeys))
     dropImpossibleKeys(combinationsKeys)
+    i = 0
     for x in combinationsKeys:
+        print(50.0 * i / len(combinationsKeys))
         withoutCondition = differenceDictionary(hand, x)
         effectCombinations = []
         for y in range(1, max - len(x)):
@@ -69,10 +73,14 @@ def FindAllCombinations(hand, min = 1, max = None):
         for y in range(len(effectCombinations)):
             for z in effectCombinations[y]:
                 Res.append((x, {z: tuple(hand[z])}))
+        i = i + 1
     return Res
 
 rules = {}
-for condition, effect in FindAllCombinations(groupValues, 1, len(groupValues) - 1):
+i = 0
+combinations = FindAllCombinations(groupValues, 1, len(groupValues) - 1)
+for condition, effect in combinations:
+    print(50 + 50.0 * i / len(combinations))
     toIntersection = []
     needLen = 0
     for v in condition.values():
@@ -82,5 +90,6 @@ for condition, effect in FindAllCombinations(groupValues, 1, len(groupValues) - 
         toIntersection.append(v)
     intersection = intersectionLists(toIntersection)
     rules[(tuple(condition.keys()), tuple(effect.keys()))] = {'Support': len(intersection) / len(groupIds), 'Confidence': len(intersection) / needLen}
+    i = i + 1
 for a in sorted(rules.items(), key=lambda kv: kv[1]['Confidence']):
     print(a)
