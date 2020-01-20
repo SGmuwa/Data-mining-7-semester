@@ -74,6 +74,8 @@ def test_split(index, value, dataset):
     return left, right
 
 # Рассчитать индекс Джини для набора разделенных данных
+# https://ru.wikipedia.org/wiki/Обучение_дерева_решений#Примесь_(критерий)_Джини 
+# https://books.google.ru/books?id=5giqDwAAQBAJ&pg=PA94&lpg=PA94&dq=avoid+divide+by+zero+score+the+group+based+on+the+score+for+each+class&source=bl&ots=GxTEBQUJIc&sig=ACfU3U0c8H8kkQ5_x9UZryi9Vv_d-xncMA&hl=ru&sa=X&ved=2ahUKEwii89y2vZLnAhUFpIsKHSGkBm4Q6AEwAHoECAYQAQ#v=onepage&q=avoid%20divide%20by%20zero%20score%20the%20group%20based%20on%20the%20score%20for%20each%20class&f=false
 def gini_index(groups, classes):
     # count all samples at split point
     n_instances = float(sum([len(group) for group in groups]))
