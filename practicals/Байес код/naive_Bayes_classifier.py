@@ -3,7 +3,7 @@
 # Чтение данных из файла
 number_of_categorical_attribute = []
 train_data=[]
-with open("data_A.txt", encoding = "utf-8") as file:
+with open(input("A filename: "), encoding = "utf-8") as file:
     number_of_categorical_attribute = file.readline().split(":")[1].split(",")
     target_var = int(file.readline().split(":")[1])
     number_of_classes = int(file.readline().split(":")[1])
@@ -32,7 +32,7 @@ print("Категориальные признаки: {0}\nЦелевая пер
 
 # Чтение гипотезы
 hypothesis_data = {}
-with open("data_H.txt", encoding = "utf-8") as f:
+with open(input("H filename: "), encoding = "utf-8") as f:
     line = f.readline().split("\t")
     for num, attribute in zip(number_of_categorical_attribute, line):
         hypothesis_data[num] = attribute
