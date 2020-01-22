@@ -67,9 +67,9 @@ for c in uniq_elements[target_var]:
     count_el_of_class.append(target_column.count(c))
 print("count_el_of_class", count_el_of_class)
 # Вычисляем априорную вероятность появления класса
-probability_classes = []
+probability_classes = {}
 for c in uniq_elements[target_var]:
-    probability_classes.append(len(list(filter(lambda x: x == c, target_column)))  / number_of_data )
+    probability_classes[c] = len(list(filter(lambda x: x == c, target_column)))  / number_of_data
 print("Априорная вероятность появления класса", probability_classes)
 
 # Расчёт условных вероятностей
@@ -80,12 +80,12 @@ def get_count_of_set_in_train_data(data, number_of_att, att, class_):
             count+=1
     return count
 
-conditional_probabilities = []
+conditional_probabilities = {}
 for ind_cl, cl in enumerate(uniq_elements[target_var]): # Для каждого класса
     cond_prob_for_class = []
     for att_ind in number_of_categorical_attribute: # Для категориальных атрибутов
         cond_prob_for_class.append((get_count_of_set_in_train_data(data, att_ind, hypothesis_data[att_ind], cl)) / count_el_of_class[ind_cl])
-    conditional_probabilities.append([cl, cond_prob_for_class])
+    conditional_probabilities[cl] = cond_prob_for_class
 print("conditional_probabilities", conditional_probabilities)
 
 #находим непрерыные атрибуты
@@ -107,25 +107,23 @@ def get_dispersion_and_math_expected(column, cl):
     for i in range(number_of_data):
         if data[i][target_var] == cl:
             list_result.append(data[i][column])
-    print("list_result", list_result)
     return [np.mean(list_result), np.var(list_result)]  
 
-cond_prob_for_continuous_attributes = []
+cond_prob_for_continuous_attributes = {}
 if(continuous_attributes!={}):
     for ind_cl,cl in enumerate(uniq_elements[target_var]):#Для каждого класса
         cb_for_class = []
         for c in continuous_attributes: # По столбцам (по непрерывным атрибутам)
             l_m_d = get_dispersion_and_math_expected(c, cl)
-            print(hypothesis_data, c)
             val = getvalue_func_Gauss(hypothesis_data[c],l_m_d[0],l_m_d[1])
             cb_for_class.append(val)                               
-        cond_prob_for_continuous_attributes.append([cl,cb_for_class])
+        cond_prob_for_continuous_attributes[cl] = cb_for_class
 print(cond_prob_for_continuous_attributes)
 
 
 # Произведение условная вероятность и вероятность класса
-result = []
-for ind,el in enumerate(conditional_probabilities):
-    result.append([el[0], probability_classes[ind] * np.prod(el[1])])
+result = {}
+for k, v in conditional_probabilities.items():
+    result[k] = probability_classes[k] * np.prod(v)
 print(result)
 
