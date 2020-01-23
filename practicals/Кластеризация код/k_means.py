@@ -78,7 +78,7 @@ def k_means(data, count_clusters, error = 0.1): # 1
         clusters = distribute_data_to_clusters(data, clusters_coordinates) # 3
         clusters_coordinates = get_centroids(clusters)
         e = search_error(clusters, clusters_coordinates)
-        print(e)
+        print("error = ", e)
         if e < error or e in e_history: break
         e_history.add(e)
     output = {}
@@ -92,6 +92,5 @@ def input_or_skip(msg, default = None):
     except:
         return default
     
-print("cluster coordinate: list of points.")
 for cluster, points in k_means(read_data(input("filename: ")), int(input("count clusters: ")), input_or_skip("error (or press enter to 0.1): ", 0.1)).items():
     print("{}:\n{}\n".format(cluster, points))
