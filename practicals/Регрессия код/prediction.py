@@ -9,7 +9,7 @@ f = open(input("filename: "), encoding = 'utf-8-sig')
 for line in f:
     columns = line.strip("\n").split('\t')
     for i in range(len(columns)):
-        columns[i] = int(columns[i])
+        columns[i] = float(columns[i])
     clustered_elements.append(columns)
 data = np.array(clustered_elements)
 print(data)
