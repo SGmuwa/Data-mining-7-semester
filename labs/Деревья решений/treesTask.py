@@ -3,8 +3,10 @@ import numpy as np
 import sklearn
 from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
+import sys
 
-print(
+if '-q' not in sys.argv:
+    print(
 '''
 1. Загрузите выборку из файла titanic.csv с помощью пакета Pandas.
 2. Оставьте в выборке четыре признака: класс пассажира (Pclass), цену билета (Fare), возраст пассажира (Age) и его пол (Sex).
@@ -58,13 +60,13 @@ def Task6():
     clf = DecisionTreeClassifier(random_state = 241)
     (data_short, d_y) = Task4()
     clf.fit(data_short, d_y)
-    return clf
+    return [clf]
 
 # 7. Вычислите важности признаков и найдите два признака с наибольшей важностью.
 # Их названия будут ответами для данной задачи
 # (в качестве ответа укажите названия признаков через запятую без пробелов).
 def Task7():
-    clf = Task6()
+    clf = Task6()[0]
     importances = pd.Series(clf.feature_importances_, index=['Pclass', 'Fare', 'Age', 'Sex'])
 
     X = [[1,2], [3, 4], [5, 6]] # обучающие выборки (3 элемента в обучающей выборке (3 строки) с двумя признаками)
@@ -77,6 +79,6 @@ def Task7():
 tasks = [Task1, Task2, Task3, Task4, Task5, Task6, Task7]
 shift = 0
 while not int(shift) in range(1, len(tasks) + 1):
-    shift = input("Выберите задание (1 ... 7) : ")
+    shift = input("Выберите задание (1 ... 7) : \n")
 for a in tasks[int(shift) - 1]():
     print(a)
