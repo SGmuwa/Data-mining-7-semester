@@ -1,79 +1,68 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
 import matplotlib.pyplot as plt
 import numpy as np 
 import random as rd 
 
 data = np.genfromtxt(input("filename: "), delimiter='\t', encoding='utf-8-sig')
 
-new_x = data[:, 0]
-new_y = data[:, 1]
+x = data[:, 0]
+y = data[:, 1]
 
-# %%
-a = new_x
-b = new_y
-b1 =(sum([i * g for i, g in zip(a, b)]) - (sum(a) * sum(b)) / (len(a))) / (sum([i ** 2 for i in a]) - (sum(a) ** 2 ) / (len(a)))
-b1
-
-
-# %%
-b0 = sum(new_y) / len(new_x) - b1 * sum(new_x) / len(new_x)
-b0
+x_mean = np.mean(x)
+y_mean = np.mean(y)
+b1up = sum([(x_ - x_mean)*(y_ - y_mean) for x_, y_ in zip(x, y)])
+b1down = sum([(x_ - x_mean)**2 for x_ in x])
+b1 = b1up / b1down
+print('b1up', b1up, 'b1down', b1down)
+print('b1', b1)
 
 
-# %%
+b0 = y_mean - b1 * x_mean
+print('b0', b0)
+
+
 new_func = lambda x : b1 * x + b0
 
 
-# %%
-plt.plot(new_x, new_y, 'o')
-plt.plot(new_x, new_func(new_x))
+plt.plot(x, y, 'o')
+plt.plot(x, new_func(x))
 plt.show()
 
 
-# %%
-# среднеквадратичная
+# Среднеквадратичная ошибка
 m = 1
-y_ = [new_func(i) for i in new_x]
-Ecko = (sum([(a - b) ** 2 for a, b in zip(new_y, y_)])) / (len(new_x) - m - 1)
-Ecko
+y_ = [new_func(i) for i in x]
+Ecko = (sum([(a - b) ** 2 for a, b in zip(y, y_)])) / (len(x) - m - 1)
+print('Среднеквадратичная ошибка', Ecko)
 
 
-# %%
-# стандартная
+# Стандартная ошибка
 Ect = Ecko ** 1/2
-Ect
+print('Стандартная ошибка Ect', Ect)
 
 
-# %%
-# изменчивость
-y_sr = sum(new_y) / len(new_y)
-Q = sum((a - y_sr) ** 2 for a in new_y)
-Q
+# Изменчивость
+y_sr = sum(y) / len(y)
+Q = sum((a - y_sr) ** 2 for a in y)
+print('Изменчивость Q', Q)
 
 
-# %%
-Qr = sum((new_func(b) - y_sr) ** 2 for b in new_x)
-Qr
+Qr = sum((new_func(b) - y_sr) ** 2 for b in x)
+print('Qr', Qr)
 
 
-# %%
-Qe = sum((a - new_func(b)) ** 2 for a ,b in zip(new_y, new_x))
-Qe
+Qe = sum((a - new_func(b)) ** 2 for a ,b in zip(y, x))
+print('Qe', Qe)
 
 
-# %%
-# Коэф детерминации
+# Коэффициент детерминации
 r2 = Qr / Q
-r2
+print('Коэффициент детерминации r2', r2)
 
 
-# %%
-# Коэф корреляции
+# Коэффициент корреляции
 r = 0
 if b1 > 0:
     r = r2 ** 1/2
 else:
     r = -(r2 ** 1/2)
-r
+print('Коэффициент корреляции r', r)
