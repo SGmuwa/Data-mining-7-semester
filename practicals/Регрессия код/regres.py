@@ -5,18 +5,10 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import random as rd 
 
-func = lambda x : -36 * x + 823
+data = np.genfromtxt(input("filename: "), delimiter='\t', encoding='utf-8-sig')
 
-
-# %%
-x = np.linspace(0, 100, 100)
-y = func(x)
-new_x = [rd.randint(0,100) for i in range(15)]
-new_y = [func(i) + rd.randint(-500, 500) for i in new_x]
-
-plt.plot(x, y)
-plt.plot(new_x, new_y, 'o')
-
+new_x = data[:, 0]
+new_y = data[:, 1]
 
 # %%
 a = new_x
@@ -35,9 +27,9 @@ new_func = lambda x : b1 * x + b0
 
 
 # %%
-plt.plot(x, y)
-plt.plot(x, new_func(x))
 plt.plot(new_x, new_y, 'o')
+plt.plot(new_x, new_func(new_x))
+plt.show()
 
 
 # %%
@@ -85,12 +77,3 @@ if b1 > 0:
 else:
     r = -(r2 ** 1/2)
 r
-
-
-# %%
-
-
-
-# %%
-
-
