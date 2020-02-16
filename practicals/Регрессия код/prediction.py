@@ -1,84 +1,68 @@
-﻿import numpy as np
 import matplotlib.pyplot as plt
-number_of_clusters = 4
-m = 1
-# Чтение данных из файла
-clustered_elements=[]
-# данные зависимости потребления Y (усл. ед.) от дохода X (усл.ед.) для некоторых домашних хозяйств. 
-f = open(input("filename: "), encoding = 'utf-8-sig')
-for line in f:
-    columns = line.strip("\n").split('\t')
-    for i in range(len(columns)):
-        columns[i] = float(columns[i])
-    clustered_elements.append(columns)
-data = np.array(clustered_elements)
-print(data)
+import numpy as np 
+import random as rd 
+
+data = np.genfromtxt(input("filename: "), delimiter='\t', encoding='utf-8-sig')
+
+x = data[:, 0]
+y = data[:, 1]
+
+x_mean = np.mean(x)
+y_mean = np.mean(y)
+b1up = sum([(x_ - x_mean)*(y_ - y_mean) for x_, y_ in zip(x, y)])
+b1down = sum([(x_ - x_mean)**2 for x_ in x])
+b1 = b1up / b1down
+print('b1up', b1up, 'b1down', b1down)
+print('b1', b1)
 
 
-# Находим уравнение линии регрессии y` = b0 + b1*x
-# Сначала находим b1
+b0 = y_mean - b1 * x_mean
+print('b0', b0)
 
-b1 = 10 * np.sum(data[:, 0] * data[:, 1]) - (np.sum(data[:, 0]) * np.sum(data[:, 1]))
-b1 /= ((np.sum(data[:, 0] ** 2) * 10 - np.sum(data[:, 0]) ** 2))
-print("b1 = ", b1)
-# Находим b0
-b0 = np.sum(data[:, 1]) / data.shape[0] - (b1 / data.shape[0]) * np.sum(data[:, 0])
-print("b0 = ", b0)
 
-x = np.linspace(data[:, 0].min(), data[:, 0].max())
-y = b0 + (b1 * x)
-plt.title("График зависимости входной переменной X от Y") # заголовок
-plt.plot(data[:, 0], data[:, 1], "ro", x, y) # построение графика
-plt.xlabel("x") # ось абсцисс
-plt.ylabel("y") # ось ординат
-plt.grid()      # включение отображение сетки
+new_func = lambda x : b1 * x + b0
+
+
+plt.plot(x, y, 'o')
+plt.plot(x, new_func(x))
 plt.show()
 
 
-# Вычислим значение y` предсказанное сетью и запишим данные и предсказанные значения в matrix
-def pred(x):
-    return b0 + b1 * x
-array_y_pred = []
-for idx, item in enumerate(data[:, 0]):
-    t = pred(item)
-    array_y_pred.append([t,])
-matrix = np.hstack((data, np.array(array_y_pred)))
-print(matrix)
+# Среднеквадратичная ошибка
+m = 1
+y_ = [new_func(i) for i in x]
+Ecko = (sum([(a - b) ** 2 for a, b in zip(y, y_)])) / (len(x) - m - 1)
+print('Среднеквадратичная ошибка', Ecko)
 
 
-
-# Оценка соответствия простой линейной регрессии реальным данным
-# Стандартная ошибка оценки
-st_e = ((matrix[:, 1] - matrix[:, 2]) ** 2).sum()
-st_e /= (data.shape[0] - m - 1)
-st_e = st_e ** 0.5
-print("Стандартная ошибка оценки = ", st_e, "\nМера разброса точек наблюдений относительной линии регрессии (показывает среднюю величину отклонения точек исходных данных от линий регрессии вдоль оси Y)")
-
-mean_y = np.mean(data, axis=0)[1] #mean_y = np.mean(data, axis=0)   -  среднии значения столбцов
-e_st_mean = ((1 / (data.shape[0] - 1)) * ((matrix[:, 1] - mean_y) ** 2).sum()) ** 0.5
-print("Ошибка относительно среднего значения = ", e_st_mean, "\nПрименение регрессии вместо оценки на основе простого среднего значения позволяет уменьшить ошибку более чем в 4 раза.")
-print("Отношение", e_st_mean / st_e)
+# Стандартная ошибка
+Ect = Ecko ** 1/2
+print('Стандартная ошибка Ect', Ect)
 
 
-# три квадратичные суммы
-# общая полная
-Q = ((matrix[:, 1] - mean_y) ** 2).sum()
-Q_r = ((matrix[:, 2] - mean_y) ** 2).sum()
-Q_e = ((matrix[:, 1] - matrix[:, 2]) ** 2).sum()
-print("Q = ", Q)
-if Q_r + Q_e != Q: raise NameError("Q != Q_r + Q_e", Q, " != ", Q_r + Q_e)
+# Изменчивость
+y_sr = sum(y) / len(y)
+Q = sum((a - y_sr) ** 2 for a in y)
+print('Изменчивость Q', Q)
+
+
+Qr = sum((new_func(b) - y_sr) ** 2 for b in x)
+print('Qr', Qr)
+
+
+Qe = sum((a - new_func(b)) ** 2 for a ,b in zip(y, x))
+print('Qe', Qe)
 
 
 # Коэффициент детерминации
-r_squared = Q_r / Q
-print("Коэффициент детерминации", r_squared, "\nПоказывает степень согласия регрессии как приближение линейного отношения между входной и выходной переменными с реальными данными")
+r2 = Qr / Q
+print('Коэффициент детерминации r2', r2)
 
 
-#Коэффициент корреляции
-x_mean = np.mean(data, axis = 0)[0]
-std_x = np.std(data[:, 0]) # std = sqrt(mean(abs(x - x.mean()) ** 2)) 
-std_y = np.std(data[:, 1])
-r = ((data[:, 0] - x_mean) * (data[:, 1] - mean_y)).sum()
-r /= ((data.shape[0]) * std_x * std_y)
-print("Коэффициент корреляции = ", r, "\nИспользуется для количественного описания линейной зависимости между двумя числовыми переменными")
-print("Коэффициент корреляции = корень из Коэффициент детерминации", r_squared ** 0.5 if(b1>0) else -(r_squared ** 0.5))
+# Коэффициент корреляции
+r = 0
+if b1 > 0:
+    r = r2 ** 1/2
+else:
+    r = -(r2 ** 1/2)
+print('Коэффициент корреляции r', r)
